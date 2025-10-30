@@ -1,0 +1,28 @@
+version: "3.9"
+services:
+  database:
+    build: ./database
+    container_name: sqlite_db
+    volumes:
+      - dbdata:/data
+
+  backend:
+    build: ./backend
+    container_name: proyecto_backend
+    ports:
+      - "4000:4000"
+    depends_on:
+      - database
+    volumes:
+      - dbdata:/app
+
+  frontend:
+    build: ./frontend
+    container_name: proyecto_frontend
+    depends_on:
+      - backend
+    ports:
+      - "8080:80"
+
+volumes:
+  dbdata:

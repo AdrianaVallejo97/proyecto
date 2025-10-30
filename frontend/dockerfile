@@ -1,0 +1,16 @@
+# Imagen base ligera
+FROM nginx:alpine
+
+# Directorio donde nginx sirve contenido
+WORKDIR /usr/share/nginx/html
+
+# Eliminar archivos por defecto
+RUN rm -rf ./*
+
+# Copiar TODO el frontend (html, css, js, img)
+COPY . .
+
+# Exponer puerto interno (Nginx usa 80)
+EXPOSE 80
+
+# Nginx corre automáticamente, no necesitas CMD adicional

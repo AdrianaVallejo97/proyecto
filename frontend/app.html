@@ -1,0 +1,30 @@
+    <!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <title> App Pokémon</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Pokémon</h1>
+      <button id="logout">Cerrar sesión</button>
+    </header>
+
+    <div class="search">
+      <input id="searchInput" placeholder="Busca un Pokémon..." />
+      <button id="searchBtn">Buscar</button>
+    </div>
+
+    <section id="result"></section>
+
+    <section id="history">
+      <h3>Búsquedas guardadas</h3>
+      <div class="history-container" id="historyList"></div>
+    </section>
+  </div>
+
+  <script src="js/app.js"></script>
+</body>
+</html>
