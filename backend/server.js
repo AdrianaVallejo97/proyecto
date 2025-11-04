@@ -1,47 +1,57 @@
 import express from "express";
 import cors from "cors";
-import dotenv from "dotenv";
+import fs from "fs";
+import path from "path";
 import Database from "better-sqlite3";
-dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 4000;
-
 app.use(cors());
 app.use(express.json());
 
-// DB SQLite
-const db = new Database("./database.db");
+// Crear carpeta "data" si no existe
+const dataDir = path.resolve("./data");
+if (!fs.existsSync(dataDir)) {
+  fs.mkdirSync(dataDir);
+  console.log("Carpeta 'data' creada para la base de datos");
+}
 
-// Tabla
+// Ruta de la base de datos
+const dbPath = path.join(dataDir, "database.db");
+
+// Conexión a la base de datos
+const db = new Database(dbPath);
+
+// Crear tabla si no existe
 db.prepare(`
   CREATE TABLE IF NOT EXISTS searches (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     term TEXT,
     sprite TEXT,
+    types TEXT,
+    abilities TEXT,
     date TEXT
-  );
+  )
 `).run();
 
-// Guardar búsqueda
+console.log("Tabla 'searches' verificada correctamente");
+
+// Rutas API
 app.post("/api/search", (req, res) => {
-  const { searchTerm, sprite } = req.body;
-  if (!searchTerm || !sprite) {
-    return res.status(400).json({ error: "searchTerm y sprite requeridos" });
-  }
-
-  db.prepare("INSERT INTO searches (term, sprite, date) VALUES (?, ?, ?)")
-    .run(searchTerm, sprite, new Date().toISOString());
-
-  res.json({ message: "Búsqueda guardada" });
+  const { searchTerm, sprite, types, abilities } = req.body;
+  const date = new Date().toISOString();
+  db.prepare(
+    "INSERT INTO searches (term, sprite, types, abilities, date) VALUES (?, ?, ?, ?, ?)"
+  ).run(searchTerm, sprite, types, abilities, date);
+  res.json({ message: "Guardado correctamente" });
 });
 
-// Listar
 app.get("/api/search", (req, res) => {
-  const rows = db.prepare("SELECT * FROM searches ORDER BY date DESC").all();
+  const rows = db.prepare("SELECT * FROM searches ORDER BY id DESC").all();
   res.json(rows);
 });
 
+// Iniciar servidor
+const PORT = process.env.PORT || 4000;
 app.listen(PORT, () =>
-  console.log(`Backend escuchando en http://localhost:${PORT}`)
+  console.log(`Servidor escuchando en http://localhost:${PORT}`)
 );

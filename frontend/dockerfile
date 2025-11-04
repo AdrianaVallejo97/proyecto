@@ -1,16 +1,14 @@
-# Imagen base ligera
+# Etapa de Nginx (servidor web)
 FROM nginx:alpine
 
-# Directorio donde nginx sirve contenido
-WORKDIR /usr/share/nginx/html
+# Copiar tu aplicación al contenedor
+COPY . /usr/share/nginx/html
 
-# Eliminar archivos por defecto
-RUN rm -rf ./*
+# Copiar el archivo de configuración de Nginx
+COPY nginx/nginx.conf /etc/nginx/conf.d/default.conf
 
-# Copiar TODO el frontend (html, css, js, img)
-COPY . .
-
-# Exponer puerto interno (Nginx usa 80)
+# Exponer el puerto 80
 EXPOSE 80
 
-# Nginx corre automáticamente, no necesitas CMD adicional
+# Comando por defecto
+CMD ["nginx", "-g", "daemon off;"]

@@ -1,12 +1,25 @@
 FROM node:18
 
+# Crear carpeta de trabajo
 WORKDIR /app
 
+# Copiar dependencias
 COPY package*.json ./
-RUN npm install
 
+# Instalar dependencias del sistema necesarias para compilar sqlite3
+RUN apt-get update && apt-get install -y python3 make g++ && rm -rf /var/lib/apt/lists/*
+
+# Instalar dependencias de Node
+RUN npm install sqlite3 && npm install
+
+# Copiar el resto del código
 COPY . .
 
+# Crear la carpeta donde se guardará la base (por si no existe)
+RUN mkdir -p /app/data
+
+# Exponer el puerto del backend
 EXPOSE 4000
 
+# Comando para iniciar el servidor
 CMD ["node", "server.js"]
